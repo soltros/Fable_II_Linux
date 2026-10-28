@@ -142,8 +142,8 @@ cp src/lua/*.lua game-content/data/scripts/recomp/
 Clone the source and fetch the pinned SDK:
 
 ```sh
-git clone https://github.com/soltros/-Fable_II_Linux.git
-cd -Fable_II_Linux
+git clone https://github.com/soltros/Fable_II_Linux.git
+cd Fable_II_Linux
 git submodule update --init thirdparty/rexglue-sdk
 python3 tools/prepare_runtime_sdk.py thirdparty/rexglue-sdk
 ```
