@@ -12,8 +12,16 @@ if [[ ! -f "$content/default.xex" || ! -d "$content/data" ]]; then
   exit 1
 fi
 # NixOS exposes the active graphics driver and system Vulkan loader here.
+lib_paths=()
 if [[ -d /run/opengl-driver/lib ]]; then
-  export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/current-system/sw/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  lib_paths+=("/run/opengl-driver/lib" "/run/current-system/sw/lib")
+fi
+if [[ -f "$build_dir/.nix-lib-path" ]]; then
+  lib_paths+=("$(<"$build_dir/.nix-lib-path")")
+fi
+if (( ${#lib_paths[@]} > 0 )); then
+  joined=$(IFS=:; echo "${lib_paths[*]}")
+  export LD_LIBRARY_PATH="${joined}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
 cd -- "$build_dir"
 exec ./fable_2 --game_data_root="$content" --fullscreen=false "$@"

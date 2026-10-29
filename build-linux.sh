@@ -22,9 +22,15 @@ cmake_args=(
   -DREXSDK_DIR="$PWD/thirdparty/rexglue-sdk"
   -DREXGLUE_USE_VULKAN=ON -DREXGLUE_USE_D3D12=OFF
   -DREXGLUE_ENABLE_TRACY=OFF -DREXGLUE_BUILD_TESTS=OFF
+  -DSDL_X11_SHARED=OFF -DSDL_WAYLAND_SHARED=OFF -DSDL_WAYLAND_LIBDECOR_SHARED=OFF
+  -DSDL_ALSA_SHARED=OFF -DSDL_PIPEWIRE_SHARED=OFF -DSDL_PULSEAUDIO_SHARED=OFF
+  -DSDL_UDEV_SHARED=OFF
 )
 cmake "${cmake_args[@]}"
 # The generated source list becomes available only after the initial codegen.
 cmake --build "$build_dir" --target fable_2_codegen --parallel "${JOBS:-6}"
 cmake "${cmake_args[@]}"
 cmake --build "$build_dir" --target fable_2 --parallel "${JOBS:-6}"
+if [[ -n "${NIX_LDFLAGS:-}" ]]; then
+  echo "$NIX_LDFLAGS" | tr ' ' '\n' | sed -n 's/^-L//p' | awk '!seen[$0]++' | paste -sd: - > "$build_dir/.nix-lib-path"
+fi
