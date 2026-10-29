@@ -6,6 +6,14 @@ if [[ ! -f default.xex ]]; then
   exit 1
 fi
 build_dir="${FABLE2_BUILD_DIR:-out/build/linux-release}"
+if [[ -f "$build_dir/CMakeCache.txt" ]]; then
+  cached_src=$(sed -n 's/^CMAKE_HOME_DIRECTORY:INTERNAL=//p' "$build_dir/CMakeCache.txt" || true)
+  if [[ -n "$cached_src" && "$cached_src" != "$PWD" ]]; then
+    echo "Detected moved repository ($cached_src -> $PWD); cleaning stale CMake cache in $build_dir..."
+    find "$build_dir" \( -name CMakeCache.txt -o -name CMakeFiles -o -name cmake_install.cmake -o -name build.ninja -o -name .ninja_deps -o -name .ninja_log \) -exec rm -rf {} +
+    rm -f generated/default/codegen.d
+  fi
+fi
 cmake_args=(
   -S . -B "$build_dir" -G Ninja
   -DCMAKE_BUILD_TYPE=Release
