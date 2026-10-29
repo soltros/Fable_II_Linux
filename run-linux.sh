@@ -16,6 +16,9 @@ lib_paths=()
 if [[ -d /run/opengl-driver/lib ]]; then
   lib_paths+=("/run/opengl-driver/lib" "/run/current-system/sw/lib")
 fi
+if [[ -d /run/opengl-driver/share ]]; then
+  export XDG_DATA_DIRS="/run/opengl-driver/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+fi
 if [[ -f "$build_dir/.nix-lib-path" ]]; then
   lib_paths+=("$(<"$build_dir/.nix-lib-path")")
 fi
